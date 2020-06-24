@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Beatiful POS-TAG</title>
+<style type="text/css" media="screen">
+* {
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  font-family: Consolas;
+
+}
+body{
+
+}
+.content{
+  margin: 0 auto;
+  width: 900px;
+  height: 600px;
+  max-height: 1000px;
+  /*background-color: red;*/
+}
+.image_area{
+  float:left;
+  width:30%;
+  height: 100%;
+  margin-top: 250px;
+  margin-right: 30px;
+   background-image: url("bg.jpg");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+}
+.content_area{
+  float:left;
+  width:65%;
+  height: 100%;
+}
+.title{
+  margin-top: 250px;
+  margin-bottom: 10px;
+}
+.title p {
+
+  font-size: 40px;
+  font-weight: bold;
+}
+input[type=text], select {
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.output{
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: white;
+}
+#executeBtn {
+  width: 15%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 11px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#executeBtn:hover {
+  background-color: #45a049;
+}
+
+</style>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+  <div class="content">
+    <div class="image_area"></div>
+    <div class="content_area">
+      <div class="title">
+      <p>오탈자와 띄어쓰기,<br> 문법 오류에 강한<br> 품사 태거입니다.</p>
+    </div>
+    <div class="input">
+      <input type="text" id="queryText"/>
+      <button id="executeBtn">분석</button>
+    </div>
+    <div id="output" class="output" style="visibility:hidden;">
+      <p><b>분석 결과</b></p>
+      <text id="output_area"></text>
+    </div>
+    </div>
+
+  </div>
+</body>
+<script type="text/javascript">
+  $('#executeBtn').click(function(){
+
+    var text = $('#queryText').val();
+    // json 객체 준비
+    var obj = new Object();
+    obj.text = text;
+    var jsonData = JSON.stringify(obj);
+
+    $.ajax({
+        url:'http://13.125.242.30:5000/pos',
+        type: 'POST',
+        contentType: "application/json",
+        data: jsonData,
+        dataType: 'json',
+        success:function(data){
+          var parseObj = data.result;
+          var output = parseResult(parseObj);
+          if($('#output_area').text() !== '')
+              $('#output_area').empty();
+          $('#output_area').append(output);
+          $('#output').css("visibility","visible");
+      }
+    })
+  });
+
+  function parseResult(Obj){
+
+    var returnText = '';
+
+    for(var i=0; i<Obj.length; i++) {
+
+      var tempText = '';
+
+      for(var j=0; j<Obj[i].length; j++){
+        tempText += ' ' + Obj[i][j];
+      }
+      returnText += tempText + '\n';
+    }
+    return returnText;
+  }
+</script>
+</html>
+
